@@ -57,8 +57,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Map<Boolean, List<Product>> groupProductsBySale(List<Long> productIds) {
-        Set<Product> products = findProductsById(productIds);
-        return products.stream().collect(Collectors.groupingBy(Product::getIsSale));
+        return findProductsById(productIds).stream().collect(Collectors.groupingBy(Product::getIsSale));
     }
 
 }
