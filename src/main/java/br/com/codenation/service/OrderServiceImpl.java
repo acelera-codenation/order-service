@@ -21,9 +21,7 @@ public class OrderServiceImpl implements OrderService {
         if (product.isPresent()) {
             double discount = product.get().getIsSale() ? 0.8 : 1.0;
             return item.getQuantity() * (product.get().getValue() * discount);
-        } else {
-            return 0.0;
-        }
+        } else return 0.0;
     }
 
     /**
@@ -31,7 +29,9 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Double calculateOrderValue(List<OrderItem> items) {
-        return items.stream().mapToDouble(this::calculateItemPrice).sum();
+        return items.stream()
+                .mapToDouble(this::calculateItemPrice)
+                .sum();
     }
 
     /**
@@ -39,8 +39,10 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Set<Product> findProductsById(List<Long> ids) {
-        return productRepository.findAll()
-                .stream().filter(item -> ids.contains(item.getId()))
+        return ids.stream()
+                .map(id -> productRepository.findById(id))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(Collectors.toSet());
     }
 
@@ -57,7 +59,9 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Map<Boolean, List<Product>> groupProductsBySale(List<Long> productIds) {
-        return findProductsById(productIds).stream().collect(Collectors.groupingBy(Product::getIsSale));
+        return findProductsById(productIds)
+                .stream()
+                .collect(Collectors.groupingBy(Product::getIsSale));
     }
 
 }
